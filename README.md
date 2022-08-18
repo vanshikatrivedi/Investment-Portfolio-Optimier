@@ -1,2 +1,2 @@
-# Investment-Portfolio-Optimier
+# Investment-Portfolio-Optimizer
 Citi Hackathon Project
