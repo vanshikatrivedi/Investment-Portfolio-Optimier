@@ -1,0 +1,5 @@
+$ ssh grads@linuxapacgtc1.conygre.com
+
+docker build https://github.com/vanshikatrivedi/Investment-Portfolio-Optimizer.git -t optimizerapp:latest
+
+docker run -p 8501:8501 optimizerapp:latest 
