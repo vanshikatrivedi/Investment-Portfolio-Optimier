@@ -2,19 +2,26 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 import plotly.express as px
 import yfinance as yf
 
 
-st.set_page_config(layout="wide")
-    
+st.set_page_config(page_title=" portfolio optimizer",
+                   page_icon="📈", layout="wide", initial_sidebar_state="auto")
 
-st.title('INVESTMENT PORTFOLIO OPTIMISER')
+
+with open('style.css') as f:
+    st.markdown(f'<style>{f.read()}</style>',unsafe_allow_html=True)
+    
+st.markdown("<h1 style='text-align: center; color: #61a5c2;'>INVESTMENT PORTFOLIO OPTIMISER</h1>", unsafe_allow_html=True)
+# st.title('INVESTMENT PORTFOLIO OPTIMISER')
 
 options = st.multiselect(
     'Choose the stocks',
     ['AAPL', 'GOOG', 'TSLA', 'C'], ['AAPL', 'GOOG', 'TSLA', 'C'])
-number = st.number_input('Enter the amount of money to invest')
+
+
 
 
 def download_prices(tickers):
@@ -118,25 +125,51 @@ if (len(options) < 2):
 else:
     tickers = ' '.join(options)
     min_risk, max_return = optimize(tickers)
-    st.subheader('For Minimum Risk')
+    
+    st.markdown("<h2 style='text-align: center; color: #c89f9c;'>Stock Performance Analysis</h2>", unsafe_allow_html=True)
+    # st.subheader('Stock Performance Analysis')
+    
+    df = yf.download(tickers.split(), '2020-1-1')['Adj Close']
+    df = df[-253:]
+    print(options)
+    if 'AAPL' in options:
+        fig1=px.line(data_frame = df,  y = 'AAPL')
+        
+        st.subheader('Line Chart : AAPL Weight vs Date ')
+        st.plotly_chart(fig1)
+        st.subheader('Bar Chart : AAPL Weight vs Date ')
+        st.bar_chart(data=df, y='AAPL', use_container_width=True)
+        
+    if 'GOOG' in options:
+        fig2=px.line(data_frame = df,  y = 'GOOG')
+        st.subheader('Line Chart : GOOG Weight vs Date ')
+        st.plotly_chart(fig2)
+        
+        st.subheader('Bar Chart : GOOG Weight vs Date ')
+        st.bar_chart(data=df, y='GOOG', use_container_width=True)
+    if 'TSLA' in options:    
+        fig3=px.line(data_frame = df,  y = 'TSLA')
+        st.subheader('Line Chart : TSLA Weight vs Date ')
+        st.plotly_chart(fig3)
+        
+        st.subheader('Bar Chart : TSLA Weight vs Date ')
+        st.bar_chart(data=df, y='TSLA', use_container_width=True)
+    if 'C' in options:
+        fig4=px.line(data_frame = df,  y = 'C')
+        st.subheader('Line Chart : C Weight vs Date')
+        st.plotly_chart(fig4)
+        
+        st.subheader('Bar Chart : C Weight vs Date ')
+        st.bar_chart(data=df, y='C', use_container_width=True)
+        
+    number = st.number_input('Enter the amount of money to invest')
+    
+    st.markdown("<h3 style='text-align: center; color: #c7f9cc;'> Minimum Risk</h3>", unsafe_allow_html=True)
+    # st.subheader(' Minimum Risk')
     st.table(min_risk)
-    st.subheader('For Maximum Return')
+    st.markdown("<h3 style='text-align: center; color: #c7f9cc;'> Maximum Return</h3>", unsafe_allow_html=True)
+    # st.subheader(' Maximum Return')
     st.table(max_return)
-    # df = yf.download(tickers.split(), '2020-1-1')['Adj Close']
-    # df = df[-253:]
-
-    
-    # fig1=px.line(data_frame = df,  y = 'AAPL')
-    # st.plotly_chart(fig1)
-    # fig2=px.line(data_frame = df,  y = 'GOOG')
-    # st.plotly_chart(fig2)
-    # fig3=px.line(data_frame = df,  y = 'TSLA')
-    # st.plotly_chart(fig3)
-    # fig4=px.line(data_frame = df,  y = 'C')
-    # st.plotly_chart(fig4)
-
-    
-    
 
 
 # The plot
@@ -162,6 +195,21 @@ fig = go.Figure(
 st.subheader("Pie chart : Min Risk")
 st.plotly_chart(fig)
 
+if ['AAPL'] or ['C'] or ['GOOG'] or ['TSLA'] in options:
+    figure = go.Figure(data=[go.Scatter(
+    x= ['AAPL','C','GOOG','TSLA'],
+    y=chartInfo,
+    mode='markers',
+    marker=dict(color=['rgb(93, 164, 214)', 'rgb(255, 144, 14)',
+               'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
+                size=30)
+    )
+    ])
+    st.subheader('Bubble Chart : Min Risk')
+    st.plotly_chart(figure)
+    
+    
+
 chartValues = max_return.columns[3:].values.tolist()
 # chartValues = ['AAPL Weight', 'GOOG Weight', 'TSLA Weight', 'C Weight']
 print(chartValues)
@@ -183,7 +231,24 @@ fig = go.Figure(
 st.subheader("Pie chart : Max Return")
 st.plotly_chart(fig)
 
+if ['AAPL'] or ['C'] or ['GOOG'] or ['TSLA'] in options:
+    figure = go.Figure(data=[go.Scatter(
+    x=['AAPL','C','GOOG','TSLA'],
+    y= chartInfo,
+    mode='markers',
+    marker=dict(color=['rgb(93, 164, 214)', 'rgb(255, 144, 14)',
+               'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
+                size=30)
+    )
+    ])
+    st.subheader('Bubble Chart : Max Return')
+    st.plotly_chart(figure)
+    
+    
 
 
+    
 
+
+    
 
